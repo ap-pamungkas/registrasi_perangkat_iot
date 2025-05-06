@@ -13,11 +13,31 @@ class PerangkatController extends Controller
 {
     public function index()
     {
+
+        $cutoff = now()->subSeconds(3);
+
+        $perangkatList = Perangkat::where('updated_at', '<', $cutoff)
+            ->where('status', 'aktif')
+            ->get();
+
+        foreach ($perangkatList as $perangkat) {
+            $perangkat->status = 'tidak aktif';
+            $perangkat->save();
+
+
+        }
+
         $perangkats = Perangkat::latest()->get();
         return view('perangkat.index', compact('perangkats'));
     }
 
 
+    public function getData()
+    {
+        $perangkats = Perangkat::latest()->get();
+
+        return response()->json($perangkats);
+    }
 
 
     public function store(Request $request)
